@@ -1,0 +1,18 @@
+flowchart TB
+    query_faq_posts["
+    posts (filter:
+    {
+    postTitle: 'privacy-policy'
+    }) {
+    title: {
+        en: String,
+        be: String,
+        ru: String
+    }
+    content: {
+        en: String,
+        be: String,
+        ru: String    
+    }
+    }
+    "]:::query

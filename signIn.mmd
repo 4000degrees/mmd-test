@@ -1,0 +1,22 @@
+flowchart LR
+    app_signIn_isToken["Is there something in localStorage('apollo-token')?"]
+    app_signIn_redirectToRoot["Redirect to /"]
+    button_signIn_signInWithGooleBtn["<button>Sign in with Google</button>"]
+    app_signIn_gapiAuthorize["gapi.authorize"]
+    app_signIn_accessToken["accessToken"]
+    app_signIn_writeTokenToStorage["Write token to localStorage"]
+    mutation_signIn_authGoogleWeb["authGoogleWeb"]:::mutation
+    
+    app_signIn_isToken-->|Yes|app_signIn_redirectToRoot
+    app_signIn_isToken-->|No|signInGoogle
+
+    subgraph signInGoogle[ ]
+        button_signIn_signInWithGooleBtn 
+        --> app_signIn_gapiAuthorize
+        --> app_signIn_accessToken
+    end
+
+    signInGoogle
+    -->mutation_signIn_authGoogleWeb
+    -->app_signIn_writeTokenToStorage
+    -->app_signIn_redirectToRoot

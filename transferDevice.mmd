@@ -1,0 +1,92 @@
+flowchart LR
+        form_transferDevice_transferDevice["
+        Please enter recipient
+        account email
+        "]:::form
+        mutation_transferDevice_initTransfer["
+            transferRequest (
+            input: {
+                action: newRequest
+                recipientEmail
+                deviceId
+            }
+            ) {
+            recipientEmail
+            }
+        "]:::mutation
+
+        modal_transferDevice_initTransfer["
+            Device transfer request submitted.
+
+            The recipient will be notified. 
+            The device will appear in their dashboard. 
+            After they confirm the reception, 
+            this device will be deleted from your account 
+            and added to the recipients account.
+        "]:::modal
+
+        form_transferDevice_transferDevice -->
+        mutation_transferDevice_initTransfer -->
+        modal_transferDevice_initTransfer
+
+        subgraph transferDeviceSender["Sender (In Device Dashboard)"]
+            modal_transferDevice_sender["
+                This device is being transferred to {recipient_name}
+                <button>Cancel Request</button>
+            "]:::modal
+
+            mutation_transferDevice_cancelTransfer["
+            transferRequest (
+            input: {
+                action: cancelRequest
+                deviceId
+            }
+            ) {
+            ???
+            }
+            "]:::mutation
+
+            modal_transferDevice_sender-->
+            mutation_transferDevice_cancelTransfer
+        end
+
+
+        subgraph transferDeviceRecipient["Recipient (Notification in recipient's Home tab)"]
+            modal_transferDevice_recipient["
+                New device transfer request
+
+                {sender_name} wants to transfer 
+                their device {device_name} to you.
+
+                <button>Refuse</button>
+                <button>Accept</button>
+            "]:::modal
+
+            mutation_transferDevice_acceptTransfer["
+                transferRequest (
+                input: {
+                    action: acceptRequest
+                    deviceId
+                }
+                ) {
+                ???
+                }
+            "]:::mutation
+
+            mutation_transferDevice_declineTransfer["
+                transferRequest (
+                input: {
+                    action: declineRequest
+                    deviceId
+                }
+                ) {
+                ???
+                }
+            "]:::mutation
+
+            modal_transferDevice_recipient
+            -->|Accept| mutation_transferDevice_acceptTransfer
+            modal_transferDevice_recipient
+            -->|Decline| mutation_transferDevice_declineTransfer
+        end
+

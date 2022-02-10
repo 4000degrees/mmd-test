@@ -1,0 +1,11 @@
+
+flowchart TB
+    query_signleDeviceDashboard["
+        me {
+        locations (filter: deviceId) {
+            sensorData
+            isOnline
+            ...
+        }
+        }
+    "]:::query

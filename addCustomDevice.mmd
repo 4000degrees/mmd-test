@@ -1,0 +1,112 @@
+flowchart TD
+    query_addCustomDevice_customDeviceManual["
+        posts (filter:
+        {
+        postTitle: 'custom-device-manual'
+        }) {
+        title: {
+            en: String,
+            be: String,
+            ru: String
+        }
+        content: {
+            en: String,
+            be: String,
+            ru: String    
+        }
+        }
+    "]:::query
+
+    modal_addCustomDevice_addCustomDeviceManual["
+        <b>Instructions for adding a custom device</b>
+
+        {content.language}
+    "]:::modal
+
+    form_addCustomDevice_addCustomDevice["
+        <h3>Add Device Form</h2>
+        Device name: String
+        Device ID: Number
+        Public: Boolean
+        Sensor Community: Boolean
+        Narodmon: Boolean
+        Board: String (Select)
+        Weather: String (Select)
+        Dust: String (Select)
+        Radiation: String (Select)
+        Floor: Number
+        Map: lat lng: Number
+    "]:::form
+
+    %%validation_addCustomDevice_addCustomDeviceForm[""]:::validation
+    
+    mutation_addCustomDevice_initDevice["
+        initDevice (
+        input: {
+            id
+            firmwareVersion
+            hardwareVersion
+            Sensorcom
+            Narodmon
+            HTP
+            PMS
+            GC
+            model
+        }
+        ) {
+        ...
+        }
+    "]:::mutation
+
+    mutation_addCustomDevice_addWebLocation["
+        addWebLocation (
+        input: {
+            deviceId
+            name
+            isPublic
+            latitude
+            longitude
+        }
+        ) {
+        ...
+        }
+    "]:::mutation
+
+    error_addCustomDevice_addDevice["Error while adding device"]:::error
+
+    query_addCustomDevice_customDeviceManual
+    --> modal_addCustomDevice_addCustomDeviceManual
+    --> form_addCustomDevice_addCustomDevice
+    --> mutation_addCustomDevice_initDevice
+    -->|Success| mutation_addCustomDevice_addWebLocation
+    mutation_addCustomDevice_initDevice -->|Error| error_addCustomDevice_addDevice
+
+    server_addCustomDevice_addDeviceCheckOwnership["
+        Датчик принадлежит пользователю?
+    "]
+    server_addCustomDevice_addDeviceCheckLocation["
+        Датчик есть в базе локаций или только девайсов?
+    "]
+
+
+    modal_addCustomDevice_success["Device added successfuly"]:::modal
+
+    mutation_addCustomDevice_initDevice -->|Device already exists| server_addCustomDevice_addDeviceCheckOwnership
+    --> |"Девайс уже есть в базе и не принадлежит пользователю. 
+    Значит тут что-то не так, может введен неправильно номер" | error_addCustomDevice_addDevice
+    server_addCustomDevice_addDeviceCheckOwnership --> |"
+    Девайс принадлежит пользователю
+        но его при этом нет в базе"| server_addCustomDevice_addDeviceCheckLocation
+        
+    server_addCustomDevice_addDeviceCheckLocation --> |"
+    Датчик есть в базе датчиков и в базе локаций.
+    Значит пользователь пытается 
+    добавить датчик еще раз. Ошибка."| error_addCustomDevice_addDevice
+    server_addCustomDevice_addDeviceCheckLocation --> |"
+    Датчик есть в базе датчиков но его нет в базе локаций. 
+    Значит инициализация была начата но не 
+    завершена. Продолжаем без ошибки"| mutation_addCustomDevice_addWebLocation
+
+
+    mutation_addCustomDevice_addWebLocation --> |Success| modal_addCustomDevice_success
+    mutation_addCustomDevice_addWebLocation --> |Error| error_addCustomDevice_addDevice

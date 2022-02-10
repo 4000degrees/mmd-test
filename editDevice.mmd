@@ -1,0 +1,33 @@
+flowchart TB        
+    query_editDevice_myDevices["
+        me {
+        locations (filter: deviceId) {
+            name
+            latitude
+            longitude
+        }
+        }
+    "]:::query
+
+    form_editDevice["
+        <h3>Edit Device Form</h3>
+        Name
+        Map (lat lng)
+        Transfer device
+    "]:::form
+
+    mutation_changeLocation["
+    changeLocation (
+        input: {
+            name
+            latitude
+            longitude
+        }
+    ) {
+        name
+        ...
+    }
+    "]:::mutation
+
+    query_editDevice_myDevices-->form_editDevice-->mutation_changeLocation
+

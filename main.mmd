@@ -1,0 +1,16 @@
+flowchart TB
+    classDef query white-space:pre,text-align:left,fill:#FFF2CC
+    classDef mutation text-align:left,fill:#bbf
+    classDef modal color:black,fill:lightblue,stroke:#f66,stroke-width:2px,stroke-dasharray: 5 5;
+    classDef error fill:#F08080
+    classDef wrong fill:#990000
+    
+    airmq["airmq-dashboard/"]
+    airmq --> signIn
+    signIn --> addCustomDevice
+    signIn --> myDevices
+    myDevices --> editDevice
+    editDevice --> transferDevice
+    myDevices --> singleDeviceDashboard
+    signIn --> privacyPolicy
+    signIn --> faq
